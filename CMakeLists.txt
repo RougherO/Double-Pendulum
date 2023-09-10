@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.21.0)
 project(DoublePendulum VERSION 0.1.0 LANGUAGES CXX)
+set(CMAKE_CXX_STANDARD 20)
 
 include(FetchContent)
 FetchContent_Declare(
@@ -11,7 +12,6 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(SFML)
 
 add_executable(DoublePendulum "src/main.cpp" "src/App/App.cpp" "src/DoublePendulum/DPendulum.cpp")
-target_compile_options(DoublePendulum PRIVATE cxx_std_20)
 target_link_libraries(DoublePendulum PRIVATE sfml-graphics sfml-window sfml-system)
 
 if (WIN32) 
