@@ -8,14 +8,17 @@ FetchContent_Declare(
     GIT_TAG 2.6.x
 )
 
-# FetchContent_Declare(
-#     ImGUI-SFML
-#     GIT_REPOSITORY https://github.com/SFML/imgui-sfml.git
-#     GIT_TAG 2.6.x
-# )
-
 FetchContent_MakeAvailable(SFML)
 
 add_executable(DoublePendulum "src/main.cpp" "src/App/App.cpp" "src/DoublePendulum/DPendulum.cpp")
-set_property(TARGET DoublePendulum PROPERTY CXX_STANDARD_REQUIRED 20)
+target_compile_options(DoublePendulum PRIVATE cxx_std_20)
 target_link_libraries(DoublePendulum PRIVATE sfml-graphics sfml-window sfml-system)
+
+if (WIN32) 
+    add_custom_command(
+        TARGET DoublePendulum
+        COMMENT "Copy OpenAL DLL"
+        PRE_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${SFML_SOURCE_DIR}/extlibs/bin/$<IF:$<BOOL:${ARCH_64BITS}>,x64,x86>/openal32.dll $<TARGET_FILE_DIR:DoublePendulum>
+        VERBATIM
+    )
+endif()
