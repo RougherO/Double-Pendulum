@@ -4,7 +4,7 @@ Double Pendulum Simulation using C++20 and SFML
 ### Description
 This Project has been made solely for the purpose of learning more about SFML and C++20 and simulations. Although it implements C++20, lot of the code and syntax still use older C++ styles like raw pointers. In future releases, the code will be gradually updated to more modern C++ style and syntax and also to SFML-3.0.
 
-Currently there is no on screen gui for manipulating the pendulums' length and mass or changing gravity and more fun stuff, you can still do it from the code, however in future you can expect support for that with ImGUI-SFML.
+Currently there is no on screen gui for manipulating the pendulums' length and mass or changing gravity and more fun stuff, you can still do it from the console using command line options, however in future you can expect support for gui with ImGUI-SFML.
 
 The integrator used in the simulation is Runge-Kutta 4th order which is not very stable so the simulation gradually loses energy with time with the added cost of being compute intensive. This shall also be modified and replaced with Verlet integration which is more stable.
 
@@ -62,6 +62,7 @@ But you need to have SFML version 2.6 on your system so check the version provid
 1. Create a `build` directory in current project directory and then create a Debug and Release directory under it.
 
     ```bash
+    $ mkdir build
     $ mkdir build/Debug && mkdir build/Release
     ```
 Select Debug or Release build: 
@@ -84,5 +85,28 @@ Select Debug or Release build:
     $ cd build/Release[Debug]
     $ ./DoublePendulum (Linux) ./DoublePendulum.exe(Windows)
     ```
+### How to use
+Like in previous steps normally executing the file will start the app from a default state, like default length of pendulum, mass etc. These values can be changed from console using respective flags.
+
+An example run on Linux would look like:
+```bash
+$ ./DoublePendulum -l1 120 -t 200
+```
+Here's a list of commands and there possible range of values:
+> Note: If the entered value is _beyond these ranges (bounds are exclusive) they are automatically ignored and set to default and unknown options are also ignored_ as this cli parser is extremely rudimentry which I have implemented myself.
+
+|  Options | Lower Bound | Upper Bound   | Purpose                            |
+|----------|-------------|---------------|------------------------------------|
+| l1 or L1 | 0           | 500           | Set length of rod 1                |
+| l2 or L2 | 0           | 500           | Set length of rod 2                |
+| m1 or M1 | 0           | 500           | Set mass of rod 1                  |
+| m2 or M2 | 0           | 500           | Set mass of rod 2                  |
+| a1 or A1 | no bound    | no bound      | Set starting angle of rod 1        |
+| a2 or A2 | no bound    | no bound      | Set starting angle of rod 2        |
+| g or G   | 0           | 100           | Set gravity                        |
+| t or T   | 0(inclusive)| 500(inclusive)| Set trail length (OFF if set to 0) |
+
+Specify these options while executing the program from command line.
 That's it!
+
 _If you like this project be sure to star it_ :)

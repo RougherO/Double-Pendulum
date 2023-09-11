@@ -24,8 +24,7 @@ private:
     double m_dt { 1. / 15. };
 
     bool trailEnable {};
-    std::size_t trailCount {};
-    std::size_t trailLength { 750 };
+    std::size_t trailLength {};
 
     sf::RectangleShape m_line1 {};
     sf::RectangleShape m_line2 {};
@@ -34,7 +33,8 @@ private:
     std::vector<sf::Vertex> trail {};
 
 public:
-    DPendulum(const double angle1 = 15., const double angle2 = 20., const double length1 = 70., const double length2 = 70., const double mass1 = 10., const double mass2 = 10.);
+    DPendulum();
+    DPendulum(const double angle1, const double angle2, const double length1, const double length2, const double mass1, const double mass2, std::size_t traillen);
 
 public:
     void setPosition(double X, double Y);
@@ -47,6 +47,7 @@ public:
     void setGravity(double g);
     void setDampCoeff1(double b);
     void setDampCoeff2(double b);
+    void setTrailLength(std::size_t len);
     void enableTrail(bool val);
 
 public:

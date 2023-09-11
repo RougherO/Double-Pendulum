@@ -3,13 +3,20 @@
 #include <numbers>
 
 // Specify initial angle, length and mass of pendulum
-DPendulum::DPendulum(const double angle1, const double angle2, const double length1, const double length2, const double mass2, const double mass1)
+DPendulum::DPendulum()
+{
+    m_circle1.setOrigin(m_circle1.getRadius(), m_circle1.getRadius()); // Setting origin of circle to the center
+    m_circle2.setOrigin(m_circle2.getRadius(), m_circle2.getRadius());
+}
+DPendulum::DPendulum(const double angle1, const double angle2, const double length1, const double length2, const double mass1, const double mass2, std::size_t traillen)
     : m_mass1 { mass1 }
     , m_mass2 { mass2 }
     , m_length1 { length1 }
     , m_length2 { length2 }
     , m_currAngle1 { (std::numbers::pi * angle1) / 180 }
     , m_currAngle2 { (std::numbers::pi * angle2) / 180 }
+    , trailEnable { traillen > 0 }
+    , trailLength { trailEnable ? traillen : 0 }
 {
     m_line1 = sf::RectangleShape(sf::Vector2f(1, length1)); // First Pendulum rod
     m_line2 = sf::RectangleShape(sf::Vector2f(1, length2)); // Second Pendulum rod
@@ -184,7 +191,9 @@ void DPendulum::setAngle2(double angle)
 // Gravity has been purposfully kept modifiable
 void DPendulum::setGravity(double g)
 {
-    m_gravity = g;
+    if (g > 0) {
+        m_gravity = g;
+    }
 }
 
 void DPendulum::setDampCoeff1(double b)
@@ -195,6 +204,11 @@ void DPendulum::setDampCoeff1(double b)
 void DPendulum::setDampCoeff2(double b)
 {
     m_dampCoeff2 = b;
+}
+
+void DPendulum::setTrailLength(std::size_t len)
+{
+    trailLength = len;
 }
 
 void DPendulum::enableTrail(bool val)

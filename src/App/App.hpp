@@ -1,6 +1,7 @@
 #pragma once
 #include "../DoublePendulum/DPendulum.hpp"
 #include "SFML/Graphics.hpp"
+#include <optional>
 #include <string>
 
 class App {
@@ -29,7 +30,7 @@ private:
     void m_render();
 
 public:
-    void run();
+    void run(const std::vector<std::optional<double>>&);
 
 public:
     App();

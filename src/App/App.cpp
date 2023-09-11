@@ -1,4 +1,6 @@
 #include "App.hpp"
+#include <optional>
+#include <vector>
 
 App::App()
 {
@@ -11,15 +13,19 @@ App::~App()
     delete m_window;
 }
 
-void App::run()
+void App::run(const std::vector<std::optional<double>>& vals)
 {
     // Initial configuration of object
-    m_dpendulum.setLength1(100.);
-    m_dpendulum.setLength2(100.);
-    m_dpendulum.setAngle1(90.);
-    m_dpendulum.setAngle2(90.);
+    m_dpendulum.setAngle1(vals[4].value_or(90.));
+    m_dpendulum.setAngle2(vals[5].value_or(90.));
+    m_dpendulum.setLength1(vals[0].value_or(70.));
+    m_dpendulum.setLength2(vals[1].value_or(70.));
+    m_dpendulum.setMass1(vals[2].value_or(10.));
+    m_dpendulum.setMass2(vals[3].value_or(10.));
+    m_dpendulum.setGravity(vals[6].value_or(0)); // 0 will be handled to use default gravity in pendulum object
+    m_dpendulum.enableTrail(vals[7].has_value());
+    m_dpendulum.setTrailLength(vals[7].value_or(250));
     m_dpendulum.setPosition(m_windowLength / 2, m_windowHeight / 2);
-    m_dpendulum.enableTrail(1);
 
     while (m_window->isOpen()) {
         m_frameTime = m_clock.restart();
