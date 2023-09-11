@@ -10,7 +10,29 @@ The integrator used in the simulation is Runge-Kutta 4th order which is not very
 
 P.S.- I am extremely new to C++ build sytems and it is a nightmare to deal with so if the CMake scripts don't work for your end please raise an issue and if you found any solution to mitigate the above create a pull request, shall try to review and merge it as soon as possible.
 
-### Requirements
+### How to install
+If you are on Windows you can directly go to [Pre-Release](https://github.com/RougherO/Double-Pendulum/releases/tag/v0.9.0-beta) section and choose the Windows zip folder extract it and execute the exe file.
+
+It is unfortunate that I do not have enough knowledge to distribute projects in the form of AppImage or Flatpaks at this point so building from source is recommended to prevent any dependency issue. You can expect the next release to have a Linux AppImage version.
+
+Nonetheless, if you want to install it managing dependencies on your own, you can clone this repo and edit the [CMakeLists.txt](./CMakeLists.txt) file. 
+Comment out these lines:
+
+```cmake
+include(FetchContent)
+FetchContent_Declare(
+    SFML
+    GIT_REPOSITORY https://github.com/SFML/SFML.git
+    GIT_TAG 2.6.x
+)
+
+FetchContent_MakeAvailable(SFML)
+```
+This will prevent cloning the SFML repo inside the project which would be the case if you go through the build route.
+
+But you need to have SFML version 2.6 on your system so check the version provided by your respective package manager. After this [build the project](#building).
+### How to build
+#### Requirements
 1. `g++ version >= 10`:
 
     Check your compiler version by running
@@ -36,8 +58,8 @@ P.S.- I am extremely new to C++ build sytems and it is a nightmare to deal with 
     ```
     If it is not available then install Ninja from [here](https://github.com/ninja-build/ninja/releases "Download Ninja here") depending on your OS. Add it to your PATH environment variable.
 
-### How to install
-1. Create a `build` directory in current directory and then create a Debug and Release directoy under it.
+#### Building
+1. Create a `build` directory in current project directory and then create a Debug and Release directory under it.
 
     ```bash
     $ mkdir build/Debug && mkdir build/Release
