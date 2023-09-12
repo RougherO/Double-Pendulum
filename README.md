@@ -1,64 +1,47 @@
 # Double-Pendulum
 Double Pendulum Simulation using C++20 and SFML
 
-### Description
+![example-image](image.png)
+
+## Description
 This Project has been made solely for the purpose of learning more about SFML and C++20 and simulations. Although it implements C++20, lot of the code and syntax still use older C++ styles like raw pointers. In future releases, the code will be gradually updated to more modern C++ style and syntax and also to SFML-3.0.
 
-Currently there is no on screen gui for manipulating the pendulums' length and mass or changing gravity and more fun stuff, you can still do it from the console using command line options, however in future you can expect support for gui with ImGUI-SFML.
+#### Current features :
+* CLI - interface to provide initial conditions for the pendulum.
+* No GUI support for manipulation of the paramenters
+* Uses RK4 integrator.
 
-The integrator used in the simulation is Runge-Kutta 4th order which is not very stable so the simulation gradually loses energy with time with the added cost of being compute intensive. This shall also be modified and replaced with Verlet integration which is more stable.
+#### Future releases :
+* GUI support to manipulate the paramenters. CLI support will not be removed.
+* Changing integrator from RK4 to Verlet because it is more stable and less computationally intensive.
 
-P.S.- I am extremely new to C++ build sytems and it is a nightmare to deal with so if the CMake scripts don't work for your end please raise an issue and if you found any solution to mitigate the above create a pull request, shall try to review and merge it as soon as possible.
+> P.S.- I am extremely new to C++ build sytems and it is a nightmare to deal with, so if the CMake scripts don't work for your end please raise an issue and if you found any solution to mitigate the above create a pull request, shall try to review and merge it as soon as possible.
 
-### How to install
-If you are on Windows you can directly go to [Pre-Release](https://github.com/RougherO/Double-Pendulum/releases/tag/v0.9.0-beta) section and choose the Windows zip folder extract it and execute the exe file.
+## How to install
+If you are on Windows you can directly go to [Pre-Release](https://github.com/RougherO/Double-Pendulum/releases/tag/v0.9.0-beta) section and choose the Windows zip folder extract it and execute the exe file from console. See [How to use](#how-to-use)
 
-It is unfortunate that I do not have enough knowledge to distribute projects in the form of AppImage or Flatpaks at this point so building from source is recommended to prevent any dependency issue. You can expect the next release to have a Linux AppImage version.
+It is unfortunate that I do not have enough knowledge to distribute projects in the form of AppImage or Flatpaks for Linux at this point so building from source is recommended to prevent any dependency issue. You can expect the next release to have a Linux AppImage version.
 
-Nonetheless, if you want to install it managing dependencies on your own, you can clone this repo and edit the [CMakeLists.txt](./CMakeLists.txt) file. 
-Comment out these lines:
+For Linux folks [building the project](#building) is the recommended route for now.
+## How to build
+### Requirements
+1. `C++ version >= 20` :
 
-```cmake
-include(FetchContent)
-FetchContent_Declare(
-    SFML
-    GIT_REPOSITORY https://github.com/SFML/SFML.git
-    GIT_TAG 2.6.x
-)
-
-FetchContent_MakeAvailable(SFML)
-```
-This will prevent cloning the SFML repo inside the project which would be the case if you go through the build route.
-
-But you need to have SFML version 2.6 on your system so check the version provided by your respective package manager. After this [build the project](#building).
-### How to build
-#### Requirements
-1. `g++ version >= 10`:
-
-    Check your compiler version by running
-    ```bash
-    $ g++ --version 
-    ``` 
-    in your terminal, in case you have older compiler you will need a new one to compile this project.
-2. `cmake >= 3.21`:
+    Check your compiler version, if it has support for c++20. 
+2. `cmake >= 3.21` :
 
     Check if you have Cmake installed by running
     ```bash
     $ cmake --version
     ```
     If it is not available then install CMake from [here](https://cmake.org/download/ "Download CMake here") depending on your OS. Add it to your PATH environment variable.
-3. `SFML = 2.6.x`:
 
-    The provided CMakeLists.txt by default installs SFML for you using `FetchContent()` in the build directory you provide and links them to the executable. If you already have SFML installed with version 2.6 in standard path then you can disable this behaviour and cmake will do the rest
-4. `Ninja`:
+    If you are on Linux, you can use the one provided by your package managers.
+3. `SFML = 2.6.x` :
 
-    Check if you have Ninja installed by running
-    ```bash
-    $ ninja --version
-    ```
-    If it is not available then install Ninja from [here](https://github.com/ninja-build/ninja/releases "Download Ninja here") depending on your OS. Add it to your PATH environment variable.
+    The provided CMakeLists.txt by default installs SFML for you using `FetchContent()` in the build directory you provide and links them to the executable. If you already have SFML installed with version 2.6 in standard path then you can disable this behaviour and then build the project.
 
-#### Building
+### Building
 1. Create a `build` directory in current project directory and then create a Debug and Release directory under it.
 
     ```bash
@@ -67,25 +50,29 @@ But you need to have SFML version 2.6 on your system so check the version provid
     ```
 Select Debug or Release build: 
 
-2. For a Release build:    
+2. * For a Release build:    
 
-    ```cmake
-    $ cmake -G "Ninja" -S . -B build/Release
+    ```bash
+    $ cmake -S . -B build/Release
     $ cmake --build build/Release --config Release
     ```
-3. For a Debug build:
+    * For a Debug build:
 
-    ```cmake
-    $ cmake -G "Ninja" -S . -B build/Debug
+    ```bash
+    $ cmake -S . -B build/Debug
     $ cmake --build build/Release --config Debug
     ```
-4. Navigate to `build/Debug` or `build/Release` and run the executable
+    This will build for the default builder you have [Makefile or Ninja or MSVS etc]. You could specify a builder by adding a -G flag, for example to create build files for Ninja:
+    ```bash
+    $ cmake -G "Ninja" -S . -B build/[Debug/Release]
+    ```
+3. Navigate to `build/Debug` or `build/Release` and run the executable
 
     ```bash
     $ cd build/Release[Debug]
     $ ./DoublePendulum (Linux) ./DoublePendulum.exe(Windows)
     ```
-### How to use
+## How to use
 Like in previous steps normally executing the file will start the app from a default state, like default length of pendulum, mass etc. These values can be changed from console using respective flags.
 
 An example run on Linux would look like:
