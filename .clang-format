@@ -1,0 +1,39 @@
+AlignArrayOfStructures: Right
+AlignAfterOpenBracket: Align
+AlignConsecutiveAssignments:
+  Enabled: true
+  AlignCompound: true
+# AlignConsecutiveShortCaseStatements:
+#   Enabled: true
+#   AcrossEmptyLines: false
+#   AcrossComments: false
+#   AlignCaseColons: false
+AlignConsecutiveMacros:
+  Enabled: true
+  AcrossEmptyLines: false
+  AcrossComments: false
+AlignEscapedNewlines: Left
+AlignOperands: AlignAfterOperator
+# AlignOperands: DontAlign
+AlignTrailingComments:
+  Kind: Always
+  OverEmptyLines: 1
+  # MaxEmptyLinesToKeep: 2
+AllowShortBlocksOnASingleLine: Empty
+AllowShortCaseLabelsOnASingleLine: true
+# AllowShortCompoundRequirementOnASingleLine: true
+AllowShortEnumsOnASingleLine: true
+AllowShortIfStatementsOnASingleLine: AllIfsAndElse
+AllowShortLambdasOnASingleLine: All
+AllowShortLoopsOnASingleLine: true
+AlwaysBreakAfterReturnType: None
+BasedOnStyle: WebKit
+BreakBeforeTernaryOperators: true
+BreakInheritanceList: BeforeComma
+IndentCaseLabels: true
+IndentWidth: 4
+QualifierAlignment: Right
+SortIncludes: Never
+SpacesBeforeTrailingComments: 3
+SpaceInEmptyBlock: true
+UseTab: Never

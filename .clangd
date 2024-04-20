@@ -1,0 +1,3 @@
+If:
+  PathMatch: [./\*\*/*.cpp, ./\*\*/*.hpp]
+  PathExclude: [build/*, submodules/*]
