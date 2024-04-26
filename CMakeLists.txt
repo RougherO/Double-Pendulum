@@ -25,13 +25,22 @@ set(LINK_OPTIONS_TARGET $<$<BOOL:${ENABLE_UB_SANITIZER}>:-fsanitize=undefined -f
 target_link_options(${NAME_TARGET} PRIVATE ${LINK_OPTIONS_TARGET})
 # ----------------------------
 
+if(NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/submodules/SFML/CMakeLists.txt)
+  message("${CMAKE_CURRENT_SOURCE_DIR}/SFML/CMakeLists.txt")
+  message(FATAL_ERROR "Please initialize submodules using:\n  git submodule update --init --recursive")
+endif()
 set(SFML_BUILD_AUDIO OFF)
 set(SFML_BUILD_NETWORK OFF)
-add_subdirectory(submodules/SFML SFML/build/)
+add_subdirectory(${CMAKE_SOURCE_DIR}/submodules/SFML SFML/build/)
+
+set(IMGUI_DIR ${CMAKE_SOURCE_DIR}/submodules/ImGui/)
+
+set(IMGUI_SFML_FIND_SFML OFF)
+add_subdirectory(${CMAKE_SOURCE_DIR}/submodules/ImGui-SFML ImGui-SFML/build)
 
 
 # set lib files here
-set(LIB_FILES sfml-graphics sfml-window sfml-system)
+set(LIB_FILES sfml-graphics sfml-window sfml-system ImGui-SFML)
 target_link_libraries(${NAME_TARGET} ${LIB_FILES})
 # ----------------------------
 
