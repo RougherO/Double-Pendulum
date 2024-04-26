@@ -11,9 +11,14 @@ inline static auto radToDeg(float angle) noexcept -> float
     return angle * 180.F / pi;
 }
 
-double DPendulum::getLength2() const
+DPendulum::DPendulum()
 {
-    return m_length2;
+    m_bob1.setOrigin(m_bob1.getRadius(), m_bob1.getRadius());                                           // Setting origin of circle shape(bob) to the center of the circle
+    m_bob2.setOrigin(m_bob2.getRadius(), m_bob2.getRadius());                                           // Initially the origin is at top left of the circle's enclosing rectangle
+    std::ranges::for_each_n(trail.begin(), m_trailLength, [this, i = 0U](sf::Vertex& point) mutable {   // Setting a fading alpha for all points in the trail
+        point.color.a = static_cast<uint8_t>((m_trailLength - i) * 255 / m_trailLength);
+        i++;
+    });
 }
 
 void DPendulum::position(sf::Vector2f const& coords) noexcept
