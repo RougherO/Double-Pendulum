@@ -1,32 +1,14 @@
 #include "DPendulum.hpp"
 #include <cmath>
 #include <numbers>
+#include <ranges>
 
-// Specify initial angle, length and mass of pendulum
-DPendulum::DPendulum()
-{
-    m_circle1.setOrigin(m_circle1.getRadius(), m_circle1.getRadius()); // Setting origin of circle to the center
-    m_circle2.setOrigin(m_circle2.getRadius(), m_circle2.getRadius());
-}
-DPendulum::DPendulum(const double angle1, const double angle2, const double length1, const double length2, const double mass1, const double mass2, std::size_t traillen)
-    : m_mass1 { mass1 }
-    , m_mass2 { mass2 }
-    , m_length1 { length1 }
-    , m_length2 { length2 }
-    , m_currAngle1 { (std::numbers::pi * angle1) / 180 }
-    , m_currAngle2 { (std::numbers::pi * angle2) / 180 }
-    , trailEnable { traillen > 0 }
-    , trailLength { trailEnable ? traillen : 0 }
-{
-    m_line1 = sf::RectangleShape(sf::Vector2f(1, length1)); // First Pendulum rod
-    m_line2 = sf::RectangleShape(sf::Vector2f(1, length2)); // Second Pendulum rod
-    m_circle1.setOrigin(m_circle1.getRadius(), m_circle1.getRadius()); // Setting origin of circle to the center
-    m_circle2.setOrigin(m_circle2.getRadius(), m_circle2.getRadius());
-}
+using std::sin, std::cos;
+constexpr float pi = std::numbers::pi_v<float>;
 
-double DPendulum::getLength1() const
+inline static auto radToDeg(float angle) noexcept -> float
 {
-    return m_length1;
+    return angle * 180.F / pi;
 }
 
 double DPendulum::getLength2() const
@@ -34,158 +16,84 @@ double DPendulum::getLength2() const
     return m_length2;
 }
 
-double DPendulum::getMass1() const
+void DPendulum::position(sf::Vector2f const& coords) noexcept
 {
-    return m_mass1;
+    position_rod1(coords);
+    m_rod1.setRotation(radToDeg(-m_currAngle1));   // negative angle because SFML considers clockwise as positive and anticlockwise as negative
+
+    position_rod2(m_bob1.getPosition());
+    m_rod2.setRotation(radToDeg(-m_currAngle2));
+
+    std::ranges::for_each_n(trail.begin(), m_trailLength, [this](sf::Vertex& points) {
+        points.position = m_bob2.getPosition();
+    });
 }
 
-double DPendulum::getMass2() const
+void DPendulum::position_rod1(sf::Vector2f const& coords) noexcept
 {
-    return m_mass2;
+    m_xCoord = coords.x;
+    m_yCoord = coords.y;
+
+    m_rod1.setPosition(m_xCoord, m_yCoord);
+    position_bob1(coords);
 }
 
-double DPendulum::getCurrAngle1() const
+void DPendulum::position_bob1(sf::Vector2f const& rod_coords) noexcept
 {
-    return m_currAngle1 * 180 / std::numbers::pi;
+    auto [xCoord, yCoord] = rod_coords;
+
+    m_bob1.setPosition(
+        xCoord + m_length1 * sin(m_currAngle1),
+        yCoord + m_length1 * cos(m_currAngle1));
 }
 
-double DPendulum::getCurrAngle2() const
+void DPendulum::position_rod2(sf::Vector2f const& coords) noexcept
 {
-    return m_currAngle2 * 180 / std::numbers::pi;
+    auto [xCoord, yCoord] = coords;
+
+    m_rod2.setPosition(xCoord, yCoord);
+    position_bob2(coords);
 }
 
-double DPendulum::getAVel1() const
+void DPendulum::position_bob2(sf::Vector2f const& rod_coords) noexcept
 {
-    return m_aVel1;
+    auto [xCoord, yCoord] = rod_coords;
+
+    m_bob2.setPosition(
+        xCoord + m_length2 * sin(m_currAngle2),
+        yCoord + m_length2 * cos(m_currAngle2));
 }
 
-double DPendulum::getAVel2() const
-{
-    return m_aVel2;
-}
-
-double DPendulum::getAAcc1() const
-{
-    return m_aAcc1;
-}
-
-double DPendulum::getAAcc2() const
-{
-    return m_aAcc2;
-}
-
-double DPendulum::getGravity() const
-{
-    return m_gravity;
-}
-
-double DPendulum::getDampCoeff1() const
-{
-    return m_dampCoeff1;
-}
-
-double DPendulum::getDampCoeff2() const
-{
-    return m_dampCoeff2;
-}
-
-double DPendulum::getKE() const
-{
-    double KE1 = 0.5 * m_mass1 * std::pow(m_length1 * m_aVel1, 2);
-    double KE2 = 0.5 * m_mass2 * (std::pow(m_length1 * m_aVel1, 2) + std::pow(m_length2 * m_aVel2, 2) + 2 * m_length1 * m_aVel1 * m_length2 * m_aVel2 * std::cos(m_currAngle1 - m_currAngle2));
-    return KE1 + KE2;
-}
-
-double DPendulum::getPE() const
-{
-    double PE1 = m_mass1 * m_gravity * (m_Y - m_circle1.getPosition().y);
-    double PE2 = m_mass2 * m_gravity * (m_Y - m_circle2.getPosition().y);
-    return PE1 + PE2;
-}
-
-double DPendulum::getEnergy() const
-{
-
-    return getPE() + getKE();
-}
-
-void DPendulum::setPosition(double X, double Y)
-{
-    m_X = X, m_Y = Y;
-    // Setting position of pendulum1
-    m_line1.setPosition(m_X, m_Y);
-    m_line1.setRotation(-(m_currAngle1 * 180) / std::numbers::pi); // negative angle because SFML considers clockwise as positive and anticlockwise as negative
-    m_circle1.setPosition(
-        m_line1.getPosition().x + m_length1 * std::sin(m_currAngle1),
-        m_line1.getPosition().y + m_length1 * std::cos(m_currAngle1));
-
-    // Setting position of pendulum2
-    m_line2.setPosition(m_circle1.getPosition());
-    m_line2.setRotation(-(m_currAngle2 * 180) / std::numbers::pi);
-    m_circle2.setPosition(
-        m_line2.getPosition().x + m_length2 * std::sin(m_currAngle2),
-        m_line2.getPosition().y + m_length2 * std::cos(m_currAngle2));
-}
-
-void DPendulum::setLength1(double length)
+void DPendulum::length1(float length) noexcept
 {
     m_length1 = length;
-    m_line1.setSize(sf::Vector2f(1, length));
-    m_circle1.setPosition(
-        m_line1.getPosition().x + m_length1 * std::sin(m_currAngle1),
-        m_line1.getPosition().y + m_length1 * std::cos(m_currAngle1));
+    m_rod1.setSize({ 1, length });
 
-    m_line2.setPosition(m_circle1.getPosition());
-    m_circle2.setPosition(
-        m_line2.getPosition().x + m_length2 * std::sin(m_currAngle2),
-        m_line2.getPosition().y + m_length2 * std::cos(m_currAngle2));
+    position_bob1(m_rod1.getPosition());
+    position_rod2(m_bob1.getPosition());
 }
 
-void DPendulum::setLength2(double length)
+void DPendulum::length2(float length) noexcept
 {
     m_length2 = length;
-    m_line2.setSize(sf::Vector2f(1, length));
-    m_circle2.setPosition(
-        m_line2.getPosition().x + m_length2 * std::sin(m_currAngle2),
-        m_line2.getPosition().y + m_length2 * std::cos(m_currAngle2));
+    m_rod2.setSize({ 1, length });
+
+    position_bob2(m_rod2.getPosition());
+}
+void DPendulum::angle1(float angle) noexcept
+{
+    m_currAngle1 = angle;
+    m_rod1.setRotation(radToDeg(-m_currAngle1));
+
+    position_bob1(m_rod1.getPosition());
+    position_rod2(m_bob1.getPosition());
 }
 
-void DPendulum::setMass1(double mass)
+void DPendulum::angle2(float angle) noexcept
 {
-    m_mass1 = mass;
-}
-
-void DPendulum::setMass2(double mass)
-{
-    m_mass2 = mass;
-}
-
-void DPendulum::setAngle1(double angle)
-{
-    m_currAngle1 = (angle * std::numbers::pi) / 180;
-
-    // Setting pendulum1's angle
-    m_line1.setRotation(-(m_currAngle1 * 180) / std::numbers::pi);
-    m_circle1.setPosition(
-        m_line1.getPosition().x + m_length1 * std::sin(m_currAngle1),
-        m_line1.getPosition().y + m_length1 * std::cos(m_currAngle1));
-
-    // Setting pendulum2
-    m_line2.setPosition(m_circle1.getPosition());
-    m_circle2.setPosition(
-        m_line2.getPosition().x + m_length2 * std::sin(m_currAngle2),
-        m_line2.getPosition().y + m_length2 * std::cos(m_currAngle2));
-}
-
-void DPendulum::setAngle2(double angle)
-{
-    m_currAngle2 = (angle * std::numbers::pi) / 180;
-
-    // Setting pendulum2's angle
-    m_line2.setRotation(-(m_currAngle2 * 180) / std::numbers::pi);
-    m_circle2.setPosition(
-        m_line2.getPosition().x + m_length2 * std::sin(m_currAngle2),
-        m_line2.getPosition().y + m_length2 * std::cos(m_currAngle2));
+    m_currAngle2 = angle;
+    m_rod2.setRotation(radToDeg(-m_currAngle2));
+    position_bob2(m_rod2.getPosition());
 }
 
 // Gravity has been purposfully kept modifiable
