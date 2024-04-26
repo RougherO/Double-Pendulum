@@ -96,32 +96,32 @@ void DPendulum::angle2(float angle) noexcept
     position_bob2(m_rod2.getPosition());
 }
 
-// Gravity has been purposfully kept modifiable
-void DPendulum::setGravity(double g)
+auto DPendulum::m_accelFunction(float aVel1, float aVel2) const noexcept -> std::pair<float, float>
 {
-    if (g > 0) {
-        m_gravity = g;
-    }
+    // Updating Angular acceleration of each pendulum per frame on this massive formula
+    float num1_1 = -m_gravity * (2 * m_mass1 + m_mass2) * sin(m_currAngle1);
+    float num2_1 = m_mass2 * m_gravity * sin(m_currAngle1 - 2 * m_currAngle2);
+    float num3_1 = 2 * sin(m_currAngle1 - m_currAngle2) * m_mass2 * (aVel2 * aVel2 * m_length2 + aVel1 * aVel1 * m_length1 * cos(m_currAngle1 - m_currAngle2));
+    float den    = (2 * m_mass1 + m_mass2 - m_mass2 * cos(2 * (m_currAngle1 - m_currAngle2)));
+
+    float num1_2 = 2 * sin(m_currAngle1 - m_currAngle2);
+    float num2_2 = aVel1 * aVel1 * m_length1 * (m_mass1 + m_mass2);
+    float num3_2 = m_gravity * (m_mass1 + m_mass2) * cos(m_currAngle1);
+    float num4_2 = aVel2 * aVel2 * m_length2 * m_mass2 * cos(m_currAngle1 - m_currAngle2);
+
+    return { (num1_1 - num2_1 - num3_1) / (m_length1 * den) - m_dampCoeff1 * m_aVel1, (num1_2 * (num2_2 + num3_2 + num4_2)) / (m_length2 * den) - m_dampCoeff2 * m_aVel2 };
 }
 
-void DPendulum::setDampCoeff1(double b)
+void DPendulum::m_verletSolve(float delta) noexcept
 {
-    m_dampCoeff1 = b;
-}
+    auto [newAcc1, newAcc2] = m_accelFunction(m_aVel1, m_aVel2);
 
-void DPendulum::setDampCoeff2(double b)
-{
-    m_dampCoeff2 = b;
-}
-
-void DPendulum::setTrailLength(std::size_t len)
-{
-    trailLength = len;
-}
-
-void DPendulum::enableTrail(bool val)
-{
-    trailEnable = val;
+    m_currAngle1 += m_aVel1 * delta + 0.5F * m_aAcc1 * delta * delta;
+    m_currAngle2 += m_aVel2 * delta + 0.5F * m_aAcc2 * delta * delta;
+    m_aVel1      += 0.5F * (m_aAcc1 + newAcc1) * delta;
+    m_aVel2      += 0.5F * (m_aAcc2 + newAcc2) * delta;
+    m_aAcc1       = newAcc1;
+    m_aAcc2       = newAcc2;
 }
 
 std::pair<double, double> DPendulum::fDash(double x1, double x2)
