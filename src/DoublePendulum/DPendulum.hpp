@@ -1,91 +1,89 @@
 #pragma once
 #include "SFML/Graphics.hpp"
-#include <utility>
-#include <vector>
+#include <array>
 
-class DPendulum : public sf::Drawable, sf::Transformable {
-private:
-    double m_gravity { 9.80665f };
-    double m_aVel1 {};
-    double m_aVel2 {};
-    double m_aAcc1 {};
-    double m_aAcc2 {};
-    double m_currAngle1 {};
-    double m_currAngle2 {};
-    double m_dampCoeff1 {};
-    double m_dampCoeff2 {};
-    double m_mass1 {};
-    double m_mass2 {};
-    double m_length1 {};
-    double m_length2 {};
-    double m_X {};
-    double m_Y {};
-
-    double m_dt { 1. / 15. };
-
-    bool trailEnable {};
-    std::size_t trailLength {};
-
-    sf::RectangleShape m_line1 {};
-    sf::RectangleShape m_line2 {};
-    sf::CircleShape m_circle1 { 5. };
-    sf::CircleShape m_circle2 { 5. };
-    std::vector<sf::Vertex> trail {};
-
+class DPendulum
+    : public sf::Drawable
+    , sf::Transformable {
 public:
     DPendulum();
-    DPendulum(const double angle1, const double angle2, const double length1, const double length2, const double mass1, const double mass2, std::size_t traillen);
 
-public:
-    void setPosition(double X, double Y);
-    void setLength1(double length);
-    void setLength2(double length);
-    void setMass1(double mass);
-    void setMass2(double mass);
-    void setAngle1(double angle);
-    void setAngle2(double angle);
-    void setGravity(double g);
-    void setDampCoeff1(double b);
-    void setDampCoeff2(double b);
-    void setTrailLength(std::size_t len);
-    void enableTrail(bool val);
-
-public:
-    void update(double dt);
-
-public:
-    double getLength1() const;
-    double getLength2() const;
-    double getMass1() const;
-    double getMass2() const;
-    double getAVel1() const;
-    double getAVel2() const;
-    double getAAcc1() const;
-    double getAAcc2() const;
-    double getCurrAngle1() const;
-    double getCurrAngle2() const;
-    double getGravity() const;
-    double getDampCoeff1() const;
-    double getDampCoeff2() const;
-    double getPE() const;
-    double getKE() const;
-    double getEnergy() const;
+    void position(sf::Vector2f const& coords) noexcept;
+    void position_rod1(sf::Vector2f const& coords) noexcept;
+    void position_bob1(sf::Vector2f const& rod_coords) noexcept;
+    void position_rod2(sf::Vector2f const& coords) noexcept;
+    void position_bob2(sf::Vector2f const& rod_coords) noexcept;
+    void length1(float length1) noexcept;
+    void length2(float length2) noexcept;
+    void angle1(float angle1) noexcept;
+    void angle2(float angle2) noexcept;
+    void update(float delta);
 
 private:
-    std::pair<double, double> fDash(double x1, double x2);
-    void RKSolver(double frameTime);
-    void rotate();
+    // Set of all default parameters for the pendulum
+    struct Defaults {
+        inline float static constexpr LENGTH1 { 70. };
+        inline float static constexpr LENGTH2 { 70. };
+        inline float static constexpr MIN_LENGTH { 1. };
+        inline float static constexpr MAX_LENGTH { 500. };
+        inline float static constexpr MASS1 { 10. };
+        inline float static constexpr MASS2 { 10. };
+        inline float static constexpr MIN_MASS { 1. };
+        inline float static constexpr MAX_MASS { 200. };
+        inline float static constexpr ANGLE1 { 90. };
+        inline float static constexpr ANGLE2 { 90. };
+        inline float static constexpr MIN_ANGLE { 0. };
+        inline float static constexpr MAX_ANGLE { 360. };
+        inline float static constexpr GRAVITY { 10. };
+        inline float static constexpr MIN_GRAVITY { 0.01F };
+        inline float static constexpr MAX_GRAVITY { 100 };
+        inline uint16_t static constexpr TRAIL { 250 };
+        inline uint16_t static constexpr MIN_TRAIL {};
+        inline uint16_t static constexpr MAX_TRAIL { 1000 };
+        inline uint16_t static constexpr MASS_TO_RADIUS_RATIO { 2 };   // We use this ratio to scale down object's mass and use it as radius to
+                                                                       // indicate increased mass -> increased radius
+        inline sf::Color static const TRAIL_COLOR { 255, 255, 255 };
+    };
 
-private:
-    virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const
+    float m_gravity { Defaults::GRAVITY };
+    float m_aVel1 {};
+    float m_aVel2 {};
+    float m_aAcc1 {};
+    float m_aAcc2 {};
+    float m_currAngle1 { Defaults::ANGLE1 };
+    float m_currAngle2 { Defaults::ANGLE2 };
+    float m_dampCoeff1 {};
+    float m_dampCoeff2 {};
+    float m_mass1 { Defaults::MASS1 };
+    float m_mass2 { Defaults::MASS2 };
+    float m_length1 { Defaults::LENGTH1 };
+    float m_length2 { Defaults::LENGTH2 };
+    float m_xCoord {};
+    float m_yCoord {};
+    uint16_t m_trailLength { Defaults::TRAIL };
+    bool trailEnabled {};
+
+    sf::RectangleShape m_rod1 {
+        {1, m_length1}  // taking thickness of rectangle as 1 to make it look like a rod
+    };
+    sf::RectangleShape m_rod2 {
+        {1, m_length2}
+    };
+    sf::CircleShape m_bob1 { Defaults::MASS1 / Defaults::MASS_TO_RADIUS_RATIO };
+    sf::CircleShape m_bob2 { Defaults::MASS2 / Defaults::MASS_TO_RADIUS_RATIO };
+    std::array<sf::Vertex, Defaults::MAX_TRAIL> trail {};
+
+    auto m_accelFunction(float aVel1, float aVel2) const noexcept -> std::pair<float, float>;
+    void m_verletSolve(float delta) noexcept;
+    void m_updatePositions() noexcept;
+    void m_updateTrail() noexcept;
+
+    void draw(sf::RenderTarget& target, [[maybe_unused]] sf::RenderStates states) const override
     {
-        states.transform *= getTransform();
-
-        // states.texture = NULL;
-        target.draw(m_line1, states);
-        target.draw(m_line2, states);
-        target.draw(m_circle1, states);
-        target.draw(m_circle2, states);
-        target.draw(&trail[0], trail.size(), sf::PrimitiveType::LinesStrip);
+        target.draw(m_rod1);
+        target.draw(m_rod2);
+        target.draw(m_bob1);
+        target.draw(m_bob2);
+        target.draw(trail.data(), m_trailLength, sf::PrimitiveType::LinesStrip);
     }
 };
