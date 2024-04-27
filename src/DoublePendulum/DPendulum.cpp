@@ -11,7 +11,7 @@ inline static auto radToDeg(float angle) noexcept -> float
     return angle * 180.F / pi;
 }
 
-DPendulum::DPendulum()
+DPendulum::DPendulum() noexcept
 {
     m_bob1.setOrigin(m_bob1.getRadius(), m_bob1.getRadius());                                           // Setting origin of circle shape(bob) to the center of the circle
     m_bob2.setOrigin(m_bob2.getRadius(), m_bob2.getRadius());                                           // Initially the origin is at top left of the circle's enclosing rectangle
@@ -149,7 +149,7 @@ void DPendulum::m_updateTrail() noexcept
     trail[0].position = m_bob2.getPosition();
 }
 
-void DPendulum::update(float delta)
+void DPendulum::update(float delta) noexcept
 {
     m_verletSolve(delta);
     m_updatePositions();

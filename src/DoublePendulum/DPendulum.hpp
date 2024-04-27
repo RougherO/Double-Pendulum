@@ -6,7 +6,7 @@ class DPendulum
     : public sf::Drawable
     , sf::Transformable {
 public:
-    DPendulum();
+    DPendulum() noexcept;
 
     void position(sf::Vector2f const& coords) noexcept;
     void position_rod1(sf::Vector2f const& coords) noexcept;
@@ -17,7 +17,7 @@ public:
     void length2(float length2) noexcept;
     void angle1(float angle1) noexcept;
     void angle2(float angle2) noexcept;
-    void update(float delta);
+    void update(float delta) noexcept;
 
 private:
     // Set of all default parameters for the pendulum
