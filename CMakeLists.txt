@@ -10,6 +10,9 @@ set(FILES_TARGET src/main.cpp src/App/App.cpp src/DoublePendulum/DPendulum.cpp)
 add_executable(${NAME_TARGET} ${FILES_TARGET})
 # ----------------------------
 
+# set font directory by passing the directory path to FONT_DIR macro 
+target_compile_definitions(${NAME_TARGET} PRIVATE FONT_DIR="${CMAKE_SOURCE_DIR}/src/Fonts/")
+
 ### -fsanitize=.. needs to be passed both in compilation and linking stage
 # enable/disable sanitizer here
 set(ENABLE_UB_SANITIZER OFF)
@@ -25,6 +28,7 @@ set(LINK_OPTIONS_TARGET $<$<BOOL:${ENABLE_UB_SANITIZER}>:-fsanitize=undefined -f
 target_link_options(${NAME_TARGET} PRIVATE ${LINK_OPTIONS_TARGET})
 # ----------------------------
 
+# Load all required external libraries
 if(NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/submodules/SFML/CMakeLists.txt)
   message("${CMAKE_CURRENT_SOURCE_DIR}/SFML/CMakeLists.txt")
   message(FATAL_ERROR "Please initialize submodules using:\n  git submodule update --init --recursive")
@@ -37,7 +41,7 @@ set(IMGUI_DIR ${CMAKE_SOURCE_DIR}/submodules/ImGui/)
 
 set(IMGUI_SFML_FIND_SFML OFF)
 add_subdirectory(${CMAKE_SOURCE_DIR}/submodules/ImGui-SFML ImGui-SFML/build)
-
+# ----------------------------
 
 # set lib files here
 set(LIB_FILES sfml-graphics sfml-window sfml-system ImGui-SFML)
