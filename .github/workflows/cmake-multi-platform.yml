@@ -6,21 +6,27 @@ on:
   pull_request:
     branches: [ "master" ]
 
+defaults:
+  run:
+    shell: bash
+
 jobs:
   build:
-    runs-on: ${{ matrix.os }}
+    name: ${{ matrix.platform.name }} ${{ matrix.config.name }}
+    runs-on: ${{ matrix.platform.os }}
 
     strategy:
-
       fail-fast: false
-      
       matrix:
-        os: [ubuntu-latest, windows-latest]
-        c_compiler: [gcc, clang, cl]
-        include:
-          - os: windows-latest
-          - os: ubuntu-latest
-          - os: ubuntu-latest
+        platform:
+        - { name: Windows VS2019, os: windows-2019  }
+        - { name: Windows VS2022, os: windows-2022  }
+        - { name: Linux GCC,      os: ubuntu-latest }
+        - { name: Linux Clang,    os: ubuntu-latest, flags: -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ }
+        - { name: macOS,          os: macos-latest  }
+        config:
+        - { name: Shared, flags: -DBUILD_SHARED_LIBS=TRUE }
+        - { name: Static, flags: -DBUILD_SHARED_LIBS=FALSE }
 
     steps:
     - uses: actions/checkout@v4
@@ -30,6 +36,10 @@ jobs:
 
     - name: Init submodules
       run: git submodule update --init --recursive
+    
+    - name: Install Linux Dependencies
+      if: runner.os == 'Linux'
+      run: sudo apt-get update && sudo apt-get install libxrandr-dev libxcursor-dev libudev-dev libopenal-dev libflac-dev libvorbis-dev libgl1-mesa-dev libegl1-mesa-dev
     
     - name: Configure CMake
       run: cmake -S ${{ github.workspace }} --preset=release
