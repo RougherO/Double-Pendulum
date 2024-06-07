@@ -1,0 +1,76 @@
+{
+    "version": 8,
+    "cmakeMinimumRequired": {
+        "major": 3,
+        "minor": 27,
+        "patch": 0
+    },
+    "configurePresets": [
+        {
+            "name": "debug",
+            "displayName": "Debug",
+            "description": "Debug Preset Ninja Generator",
+            "generator": "Ninja",
+            "binaryDir": "${sourceDir}/build/${presetName}",
+            "cacheVariables": {
+                "CMAKE_INSTALL_PREFIX": "${sourceDir}/install/${presetName}",
+                "CMAKE_BUILD_TYPE": "Debug"
+            }
+        },
+        {
+            "name": "release",
+            "displayName": "Release",
+            "description": "Release Preset Ninja Generator",
+            "generator": "Ninja",
+            "binaryDir": "${sourceDir}/build/${presetName}",
+            "cacheVariables": {
+                "CMAKE_INSTALL_PREFIX": "${sourceDir}/install/${presetName}",
+                "CMAKE_BUILD_TYPE": "Release"
+            }
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "debug-build",
+            "displayName": "Debug Build Preset",
+            "configurePreset": "debug",
+            "configuration": "Debug"
+        },
+        {
+            "name": "release-build",
+            "displayName": "Release Build Preset",
+            "configurePreset": "release",
+            "configuration": "Release"
+        }
+    ],
+    "workflowPresets": [
+        {
+            "name": "debug-workflow",
+            "displayName": "Debug Workflow",
+            "steps": [
+                {
+                    "name": "debug",
+                    "type": "configure"
+                },
+                {
+                    "name": "debug-build",
+                    "type": "build"
+                }
+            ]
+        },
+        {
+            "name": "release-workflow",
+            "displayName": "Release Workflow",
+            "steps": [
+                {
+                    "name": "release",
+                    "type": "configure"
+                },
+                {
+                    "name": "release-build",
+                    "type": "build"
+                }
+            ]
+        }
+    ]
+}
