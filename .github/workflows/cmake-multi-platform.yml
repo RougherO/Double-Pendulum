@@ -54,6 +54,7 @@ jobs:
     - name: Create GitHub Release and upload artifacts 
       shell: bash
       run: |
+        cd ${{ github.workspace }}/build/release
         gh release create v2.0.x *.tar.gz *.zip
-      env: 
+      env:
         GITHUB_TOKEN: ${{ github.TOKEN }}
