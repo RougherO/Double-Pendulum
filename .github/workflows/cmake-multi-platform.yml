@@ -57,6 +57,6 @@ jobs:
       shell: bash
       run: |
         cd ${{ github.workspace }}/build/release
-        gh release upload v2.0.x *.tar.gz *.zip
+        gh release upload v2.0.x *.tar.gz *.zip --clobber
       env:
         GITHUB_TOKEN: ${{ github.TOKEN }}
