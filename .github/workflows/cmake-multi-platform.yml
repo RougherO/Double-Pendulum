@@ -12,9 +12,9 @@ defaults:
 
 jobs:
   build_release:
-    permissions: write
     name: ${{ matrix.platform.name }} ${{ matrix.config.name }}
     runs-on: ${{ matrix.platform.os }}
+    permissions: write
 
     strategy:
       fail-fast: false
