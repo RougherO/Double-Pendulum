@@ -43,7 +43,7 @@ jobs:
       run: sudo apt-get update && sudo apt-get install libxrandr-dev libxcursor-dev libudev-dev libopenal-dev libflac-dev libvorbis-dev libgl1-mesa-dev libegl1-mesa-dev
     
     - name: Configure CMake
-      run: cmake ${{ matrix.platform.flags }} ${{ matrix.config.flags }} --preset=release
+      run: cmake ${{ matrix.platform.flags }} ${{ matrix.config.flags }} -DRUNNER_OS=${{ runner.os }} --preset=release
 
     - name: Build
       run: cmake --build --preset=release-build
@@ -57,6 +57,6 @@ jobs:
       shell: bash
       run: |
         cd ${{ github.workspace }}/build/release
-        gh release create v2.0.x *.tar.gz *.zip
+        gh release upload v2.0.x *.tar.gz *.zip
       env:
         GITHUB_TOKEN: ${{ github.TOKEN }}
