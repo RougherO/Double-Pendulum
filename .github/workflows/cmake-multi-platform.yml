@@ -11,7 +11,7 @@ defaults:
     shell: bash
 
 jobs:
-  build:
+  build_release:
     name: ${{ matrix.platform.name }} ${{ matrix.config.name }}
     runs-on: ${{ matrix.platform.os }}
 
@@ -42,7 +42,19 @@ jobs:
       run: sudo apt-get update && sudo apt-get install libxrandr-dev libxcursor-dev libudev-dev libopenal-dev libflac-dev libvorbis-dev libgl1-mesa-dev libegl1-mesa-dev
     
     - name: Configure CMake
-      run: cmake -S ${{ github.workspace }} --preset=release
+      run: cmake --preset=release
 
     - name: Build
       run: cmake --build --preset=release-build
+
+    - name: Package build file
+      run: |
+            cd build/release/
+            cpack
+            
+    - name: Create GitHub Release and upload artifacts 
+      shell: bash
+      run: |
+        gh release create v2.0.x *.tar.gz *.zip
+      env: 
+        GITHUB_TOKEN: ${{ github.TOKEN }}
