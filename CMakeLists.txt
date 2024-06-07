@@ -1,8 +1,10 @@
-cmake_minimum_required(VERSION 3.21.0)
+cmake_minimum_required(VERSION 3.27.0)
 
 # set output filename here
 set(NAME_TARGET DoublePendulum)
+set(VERSION_TARGET 2.0.1)
 project(${NAME_TARGET} LANGUAGES CXX)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 # ----------------------------
 
 # set all project files here
@@ -35,15 +37,31 @@ if(NOT EXISTS ${CMAKE_SOURCE_DIR}/submodules/SFML/CMakeLists.txt)
 endif()
 set(SFML_BUILD_AUDIO OFF)
 set(SFML_BUILD_NETWORK OFF)
-add_subdirectory(${CMAKE_SOURCE_DIR}/submodules/SFML SFML/build/)
+add_subdirectory(${CMAKE_SOURCE_DIR}/submodules/SFML SFML/build EXCLUDE_FROM_ALL)
 
 set(IMGUI_DIR ${CMAKE_SOURCE_DIR}/submodules/ImGui/)
 
 set(IMGUI_SFML_FIND_SFML OFF)
-add_subdirectory(${CMAKE_SOURCE_DIR}/submodules/ImGui-SFML ImGui-SFML/build)
+add_subdirectory(${CMAKE_SOURCE_DIR}/submodules/ImGui-SFML ImGui-SFML/build EXCLUDE_FROM_ALL)
 # ----------------------------
 
 # set lib files here
 set(LIB_FILES sfml-graphics sfml-window sfml-system ImGui-SFML)
 target_link_libraries(${NAME_TARGET} ${LIB_FILES})
 # ----------------------------
+
+# CPack configuration
+set(CPACK_GENERATOR ZIP TGZ)
+set(CPACK_PACKAGE_NAME ${NAME_TARGET})
+set(CPACK_PACKAGE_VERSION ${VERSION_TARGET})
+set(CPACK_PACKAGE_CONTACT "roughero2@gmail.com")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Double Pendulum Simulation")
+set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}")
+set(CPACK_SOURCE_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}-source")
+set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/LICENSE")
+set(CPACK_RESOURCE_FILE_README "${CMAKE_SOURCE_DIR}/README.md")
+
+include(CPack)
+
+# Specify the install directories for the executable and libraries
+install(TARGETS ${NAME_TARGET} DESTINATION bin)
