@@ -24,6 +24,9 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+
+    - name: Install ninja-build tool
+      uses: seanmiddleditch/gha-setup-ninja@v4      
     
     - name: Configure CMake
       run: cmake -S ${{ github.workspace }} --preset=release
