@@ -1,3 +1,5 @@
 If:
-  PathMatch: [./\*\*/*.cpp, ./\*\*/*.hpp]
-  PathExclude: [build/*, submodules/*]
+  PathMatch: .*.[ch](pp)?
+  PathExclude: (build|submodules)/.*
+CompileFlags:
+  CompilationDatabase: build

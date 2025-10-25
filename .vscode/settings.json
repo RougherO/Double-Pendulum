@@ -1,0 +1,13 @@
+{
+    "lldb.displayFormat": "auto",
+    "lldb.dereferencePointers": true,
+    "lldb.consoleMode": "commands",
+    "clangd.onConfigChanged": "prompt",
+    "clangd.arguments": [
+        "--enable-config",
+        "--clang-tidy",
+        "--compile-commands-dir=build",
+        "--header-insertion=never"
+    ],
+    "clang-tidy.buildPath": "build",
+}
