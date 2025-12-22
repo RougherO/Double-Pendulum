@@ -11,5 +11,8 @@ if(NOT EXISTS ${CMAKE_SOURCE_DIR}/submodules/SFML/CMakeLists.txt)
 endif()
 
 add_subdirectory(${CMAKE_SOURCE_DIR}/submodules/SFML)
+set(IMGUI_DIR ${CMAKE_SOURCE_DIR}/submodules/ImGui)
+set(IMGUI_SFML_FIND_SFML OFF)
+add_subdirectory(${CMAKE_SOURCE_DIR}/submodules/ImGui-SFML)
 
 add_subdirectory(src)

@@ -8,6 +8,7 @@ Checks: clang-analyzer-*, clang-*,
         -bugprone-stringview-nullptr,
         -bugprone-easily-swappable-parameters,
         -performance-avoid-endl,
+        -portability-avoid-pragma-once,
         # readability-*, -readability-identifier-length, -readability-magic-numbers, -readability-implicit-bool-conversion,
         # boost-*
 

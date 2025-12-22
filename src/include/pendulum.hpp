@@ -1,45 +1,37 @@
 #pragma once
-#include "sprites.hpp"
-
 #include "SFML/Graphics/CircleShape.hpp"
 #include "SFML/Graphics/RectangleShape.hpp"
-#include "SFML/Graphics/RenderTarget.hpp"
-#include "SFML/Graphics/RenderStates.hpp"
 
-struct Pendulum {
-    Pendulum() = default;
+namespace Pendulum {
+namespace Constants {
+    inline constexpr float default_length1 = 50.f;
+    inline constexpr float default_length2 = 50.f;
 
-    Pendulum(Pendulum const&)            = delete;
-    Pendulum& operator=(Pendulum const&) = delete;
+    inline constexpr float default_mass1 = 20.f;
+    inline constexpr float default_mass2 = 20.f;
 
-    Pendulum(Pendulum&&) noexcept            = default;
-    Pendulum& operator=(Pendulum&&) noexcept = default;
+    inline constexpr float default_angle1 = std::numbers::pi_v<float> / 6; // 30-degree
+    inline constexpr float default_angle2 = std::numbers::pi_v<float> / 4; // 45-degree
 
+    // to scale the mass at a lower rate than radii
+    inline constexpr float mass_to_radius_ratio = 4;
+}
+struct PendulumState {
     float pos_x {}, pos_y {};
+    float length1 {}, length2 {};
+    float mass1 {}, mass2 {};
+
     float angular_vel1 {}, angular_vel2 {};
     float angular_acc1 {}, angular_acc2 {};
     float curr_angle1 {}, curr_angle2 {};
-    float length1 {}, length2 {};
-    float mass1 {}, mass2 {};
 };
 
-struct PendulumSprite final : Sprite<Pendulum> {
-    PendulumSprite(Pendulum const& p)
-        : Sprite { p }
-        , rod1 { { 1, p.length1 } }
-        , rod2 { { 1, p.length2 } }
-        , bob1 { p.mass1 }
-        , bob2 { p.mass2 }
-    {
-        auto const r1 = bob1.getRadius();
-        auto const r2 = bob2.getRadius();
-
-        bob1.setOrigin({ r1, r1 });
-        bob2.setOrigin({ r2, r2 });
-    }
-
+struct PendulumSprite final : sf::Drawable {
     void draw(sf::RenderTarget& target, sf::RenderStates) const final;
 
-    mutable sf::RectangleShape rod1, rod2;
-    mutable sf::CircleShape bob1, bob2;
+    sf::RectangleShape rod1, rod2;
+    sf::CircleShape bob1, bob2;
 };
+
+void init(PendulumState& state, PendulumSprite& sprite);
+}

@@ -1,22 +1,38 @@
 #pragma once
 #include <utility>
 
-struct Pendulum;
-struct Physics {
-    float gravity {};
-    float damp {};
+namespace Pendulum {
+struct PendulumState;
+}
 
-    template <typename Derived>
-    void update(this Derived&& self, Pendulum& p, float dt) { std::forward<Derived>(self)(p, dt); }
+namespace Physics {
+namespace Constants {
+    inline constexpr float default_gravity = 9.8F;
+    inline constexpr float default_damp    = 0.F;
+}
+struct Environment;
+
+template <typename T>
+concept PhysicsSolver = requires(T t) {
+    // Expect the call operator to be overloaded to
+    // take the environement, the pendulum state and
+    // duration for update
+    t(std::declval<Environment>(), std::declval<Pendulum::PendulumState&>(), 0.F);
 };
 
-struct ModifiedVerlet : Physics {
-    void operator()(Pendulum& p, float dt);
+struct Environment {
+    float gravity;
+    float damp;
+};
+
+struct ModifiedVerlet {
+    void operator()(Environment env, Pendulum::PendulumState& state, float dt) const;
 
 private:
-    auto m_calculate_angular_acc(Pendulum const&) -> std::pair<float, float>;
+    auto m_calculate_angular_acc(Environment env, Pendulum::PendulumState const&) const -> std::pair<float, float>;
 };
 
-struct RungeKutta : Physics {
-    void operator()(Pendulum& p, float dt);
+struct RungeKutta {
+    void operator()(Environment env, Pendulum::PendulumState& state, float dt) const;
 };
+}
