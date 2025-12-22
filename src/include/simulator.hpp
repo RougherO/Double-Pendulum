@@ -17,6 +17,9 @@ namespace Constants {
     // simulation constants
     inline constexpr float delta       = 0.01F;
     inline constexpr Core::usize iters = 8; // how many iterations of the simulation to run per frame
+
+    // system constants
+    inline constexpr Core::usize max_last_frame_time_count = 8;
 }
 
 namespace {

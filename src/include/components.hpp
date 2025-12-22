@@ -1,64 +1,34 @@
 #pragma once
 #include <concepts>
-#include <functional>
 
 #include "imgui.h"
 
 namespace Componenets {
-struct Slider {
-    Slider(char const* label, float& data, float min, float max)
-        : m_label { label }
-        , m_data { data }
-        , m_min { min }
-        , m_max { max }
-    {
-    }
+inline void slider(char const* label, float& data, float min, float max)
+{
+    ImGui::SliderScalar(label, ImGuiDataType_Float,
+                        &data, &min, &max,
+                        "%.2f", ImGuiSliderFlags_ClampOnInput);
+}
 
-    void operator()()
-    {
-        ImGui::SliderScalar(m_label, ImGuiDataType_Float,
-                            &m_data, &m_min, &m_max,
-                            "%.2f", ImGuiSliderFlags_ClampOnInput);
-    }
-
-private:
-    char const* m_label {};
-    float& m_data;
-    float m_min {};
-    float m_max {};
+inline void text(char const* label)
+{
+    ImGui::Text("%s", label);
 };
 
-struct Text {
-    Text(char const* label)
-        : m_label { label }
-    {
+inline void button(char const* label, std::invocable auto const& callback)
+{
+    if (ImGui::SmallButton(label)) {
+        callback();
     }
-
-    void operator()()
-    {
-        ImGui::Text("%s", m_label);
-    }
-
-private:
-    char const* m_label {};
 };
 
-struct Button {
-    Button(char const* label, std::invocable auto const& callback)
-        : m_label { label }
-        , m_callback { callback }
-    {
-    }
-
-    void operator()()
-    {
-        if (ImGui::SmallButton(m_label)) {
-            m_callback();
-        }
-    }
-
-private:
-    char const* m_label {};
-    std::function<void()> m_callback {};
-};
+template <typename... Components>
+inline void horizontal_layout(Components... components)
+{
+    bool first { true };
+    (((first ? (void)(first = false) : ImGui::SameLine()),
+      components()),
+     ...);
+}
 }

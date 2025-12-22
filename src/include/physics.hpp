@@ -17,7 +17,7 @@ concept PhysicsSolver = requires(T t) {
     // Expect the call operator to be overloaded to
     // take the environement, the pendulum state and
     // duration for update
-    t(std::declval<Environment>(), std::declval<Pendulum::PendulumState&>(), 0.F);
+    t(std::declval<Pendulum::PendulumState&>(), std::declval<Environment>(), 0.F);
 };
 
 struct Environment {
@@ -26,13 +26,13 @@ struct Environment {
 };
 
 struct ModifiedVerlet {
-    void operator()(Environment env, Pendulum::PendulumState& state, float dt) const;
+    void operator()(Pendulum::PendulumState& state, Environment env, float dt) const;
 
 private:
     auto m_calculate_angular_acc(Environment env, Pendulum::PendulumState const&) const -> std::pair<float, float>;
 };
 
 struct RungeKutta {
-    void operator()(Environment env, Pendulum::PendulumState& state, float dt) const;
+    void operator()(Pendulum::PendulumState& state, Environment env, float dt) const;
 };
 }

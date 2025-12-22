@@ -2,6 +2,8 @@
 #include "SFML/Graphics/CircleShape.hpp"
 #include "SFML/Graphics/RectangleShape.hpp"
 
+#include "physics.hpp"
+
 namespace Pendulum {
 namespace Constants {
     inline constexpr float default_length1 = 50.f;
@@ -33,5 +35,14 @@ struct PendulumSprite final : sf::Drawable {
     sf::CircleShape bob1, bob2;
 };
 
-void init(PendulumState& state, PendulumSprite& sprite);
+void init_state(PendulumState& state);
+void init_sprite(PendulumSprite& sprite, PendulumState const& state);
+
+void update_state_on_transition(PendulumState& state, Physics::PhysicsSolver auto const& solver,
+                                Physics::Environment env, float dt)
+{
+    solver(state, env, dt);
+}
+
+void update_sprite_on_transition(PendulumSprite& sprite, PendulumState const& state);
 }

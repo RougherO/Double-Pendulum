@@ -4,7 +4,7 @@
 #include "pendulum.hpp"
 
 namespace Physics {
-void ModifiedVerlet::operator()(Environment env, Pendulum::PendulumState& state, float dt) const
+void ModifiedVerlet::operator()(Pendulum::PendulumState& state, Environment env, float dt) const
 {
     // Modified Velocity Verlet Solver when acceleration is dependent on velocity
     // along with position.

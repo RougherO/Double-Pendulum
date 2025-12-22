@@ -2,7 +2,6 @@ set(SRC_FILES
     main.cpp
     pendulum.cpp
     physics.cpp
-    updater.cpp
     simulator.cpp
 )
 

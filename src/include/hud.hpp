@@ -1,5 +1,6 @@
 #pragma once
 #include <concepts>
+#include <numbers>
 
 #include "components.hpp"
 
@@ -23,38 +24,22 @@ namespace Constants {
     inline constexpr float max_hud_width = 200.F;
 }
 
-struct MassSlider : Componenets::Slider {
-    MassSlider(char const* label, float& data)
-        : Componenets::Slider(label, data, Constants::min_mass, Constants::max_mass)
-    {
-    }
-};
+inline void mass_slider(char const* label, float& data)
+{
+    Componenets::slider(label, data, Constants::min_mass, Constants::max_mass);
+}
 
-struct LengthSlider : Componenets::Slider {
-    LengthSlider(char const* label, float& data)
-        : Componenets::Slider(label, data, Constants::min_length, Constants::max_length)
-    {
-    }
-};
+inline void length_slider(char const* label, float& data)
+{
+    Componenets::slider(label, data, Constants::min_length, Constants::max_length);
+}
 
-struct EnvParamSlider : Componenets::Slider {
-    EnvParamSlider(char const* label, float& data, float min, float max)
-        : Componenets::Slider(label, data, min, max)
-    {
-    }
-};
+inline void angle_slider(char const* label, float& data)
+{
+    Componenets::slider(label, data, Constants::min_angle, Constants::max_angle);
+}
 
-struct AngleSlider : Componenets::Slider {
-    AngleSlider(char const* label, float& data)
-        : Componenets::Slider(label, data, Constants::min_angle, Constants::max_angle)
-    {
-    }
-};
-
-using Componenets::Text, Componenets::Button;
-
-template <std::invocable... Components>
-void view(char const* name, std::invocable auto const& window_setter, Components... components)
+void view(char const* name, std::invocable auto const& window_setter, std::invocable auto const& layout_setter)
 {
     window_setter();
 
@@ -62,7 +47,9 @@ void view(char const* name, std::invocable auto const& window_setter, Components
                  ImGuiWindowFlags_NoMove
                      | ImGuiWindowFlags_NoResize
                      | ImGuiWindowFlags_HorizontalScrollbar);
-    (components(), ...);
+
+    layout_setter();
+
     ImGui::End();
 }
 
