@@ -3,6 +3,7 @@ set(SRC_FILES
     pendulum.cpp
     physics.cpp
     updater.cpp
+    simulator.cpp
 )
 
 add_executable(${PROJECT_NAME} ${SRC_FILES})
