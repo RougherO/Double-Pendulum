@@ -1,7 +1,7 @@
 #include <cmath>
 
-#include "physics.hpp"
-#include "pendulum.hpp"
+#include "physics/modified_verlet.hpp"
+#include "pendulum/state.hpp"
 
 namespace Physics {
 void ModifiedVerlet::operator()(Pendulum::PendulumState& state, Environment env, float dt) const
@@ -32,22 +32,35 @@ auto ModifiedVerlet::m_calculate_angular_acc(Environment env, Pendulum::Pendulum
 {
     using std::sin, std::cos;
 
-    float delta = state.curr_angle1 - state.curr_angle2;
+    float const a1 = state.curr_angle1;
+    float const a2 = state.curr_angle2;
+    float const m1 = state.mass1;
+    float const m2 = state.mass2;
+    float const l1 = state.length1;
+    float const l2 = state.length2;
+    float const w1 = state.angular_vel1;
+    float const w2 = state.angular_vel2;
 
-    float num1_1 = -env.gravity * (2 * state.mass1 + state.mass2) * sin(state.curr_angle1);
-    float num2_1 = state.mass2 * env.gravity * sin(state.curr_angle1 - 2 * state.curr_angle2);
-    float num3_1 = 2 * sin(delta) * state.mass2;
-    float num4_1 = state.angular_vel2 * state.angular_vel2 * state.length2 + state.angular_vel1 * state.angular_vel1 * state.length1 * cos(delta);
-    float den    = (2 * state.mass1 + state.mass2 - state.mass2 * cos(2 * delta));
+    float const delta = a1 - a2;
 
-    float num1_2 = 2 * sin(delta);
-    float num2_2 = state.angular_vel1 * state.angular_vel1 * state.length1 * (state.mass1 + state.mass2);
-    float num3_2 = env.gravity * (state.mass1 + state.mass2) * cos(state.curr_angle1);
-    float num4_2 = state.angular_vel2 * state.angular_vel2 * state.length2 * state.mass2 * cos(delta);
+    float const sin_delta = sin(delta);
+    float const cos_delta = cos(delta);
+
+    float const num1_1 = -env.gravity * (2 * m1 + m2) * sin(a1);
+    float const num2_1 = m2 * env.gravity * sin(a1 - 2.F * a2);
+    float const num3_1 = 2 * sin_delta * m2;
+    float const num4_1 = w2 * w2 * l2 + w1 * w1 * l1 * cos_delta;
+
+    float const den = (2 * m1 + m2 - m2 * cos(2 * delta));
+
+    float const num1_2 = 2 * sin_delta;
+    float const num2_2 = w1 * w1 * l1 * (m1 + m2);
+    float const num3_2 = env.gravity * (m1 + m2) * cos(a1);
+    float const num4_2 = w2 * w2 * l2 * m2 * cos_delta;
 
     return {
-        (num1_1 - num2_1 - num3_1 * num4_1) / (state.length1 * den) - env.damp * state.angular_vel1,
-        (num1_2 * (num2_2 + num3_2 + num4_2)) / (state.length2 * den) - env.damp * state.angular_vel2,
+        (num1_1 - num2_1 - num3_1 * num4_1) / (l1 * den) - env.damp * w1,
+        (num1_2 * (num2_2 + num3_2 + num4_2)) / (l2 * den) - env.damp * w2,
     };
 }
 }

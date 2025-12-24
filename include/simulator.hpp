@@ -3,9 +3,10 @@
 
 #include "imgui-SFML.h"
 
-#include "pendulum.hpp"
-#include "physics.hpp"
-#include "types.hpp"
+#include "pendulum/sprite.hpp"
+#include "pendulum/state.hpp"
+#include "physics/physics.hpp"
+#include "core/types.hpp"
 
 namespace Simulator {
 namespace Constants {
@@ -26,9 +27,9 @@ namespace {
     struct {
         sf::RenderWindow window;
         std::vector<Pendulum::PendulumState> states;
-        std::vector<Pendulum::PendulumSprite> sprites;
+        Pendulum::PendulumSpriteArray sprites;
         Physics::Environment environ;
-    } system;
+    } system; // for internal use only
 }
 
 void init();

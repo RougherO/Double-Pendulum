@@ -3,9 +3,9 @@
 #include <numeric>
 #include <type_traits>
 
-#include "types.hpp"
+#include "core/types.hpp"
 
-namespace DataStructures {
+namespace DataStructs {
 template <typename T, Core::usize N>
     requires std::is_arithmetic_v<T>
 class RingBuffer {

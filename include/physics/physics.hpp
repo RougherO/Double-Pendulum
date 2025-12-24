@@ -10,6 +10,7 @@ namespace Constants {
     inline constexpr float default_gravity = 9.8F;
     inline constexpr float default_damp    = 0.F;
 }
+
 struct Environment;
 
 template <typename T>
@@ -23,16 +24,5 @@ concept PhysicsSolver = requires(T t) {
 struct Environment {
     float gravity;
     float damp;
-};
-
-struct ModifiedVerlet {
-    void operator()(Pendulum::PendulumState& state, Environment env, float dt) const;
-
-private:
-    auto m_calculate_angular_acc(Environment env, Pendulum::PendulumState const&) const -> std::pair<float, float>;
-};
-
-struct RungeKutta {
-    void operator()(Pendulum::PendulumState& state, Environment env, float dt) const;
 };
 }
