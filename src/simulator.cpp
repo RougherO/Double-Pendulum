@@ -4,7 +4,8 @@
 #include <algorithm>
 
 #include "physics/modified_verlet.hpp"
-#include "data_structs/ring_buffer.hpp"
+#include "core/DS/ring_buffer.hpp"
+#include "core/assets.hpp"
 #include "ui/hud.hpp"
 #include "simulator.hpp"
 
@@ -37,7 +38,16 @@ void init()
         Pendulum::push_sprite_with_state(system.sprites, state);
     });
 
-    ImGui::SFML::Init(system.window);
+    ImGui::SFML::Init(system.window, false);
+
+    auto& io = ImGui::GetIO();
+    io.Fonts->ClearFonts();
+
+    for (auto const& entry : std::filesystem::directory_iterator { Assets::fonts }) {
+        io.Fonts->AddFontFromFileTTF(entry.path().c_str(), window_font_size);
+    }
+
+    ImGui::SFML::UpdateFontTexture();
 }
 
 void start()
@@ -92,8 +102,6 @@ void start()
 
         ImGui::SFML::Update(system.window, frame_time);
 
-        ImGui::ShowDemoWindow();
-
         UI::HUD::view(
             "HUD",
 
@@ -107,6 +115,7 @@ void start()
 
             [&] {
                 using namespace UI::Components;
+                ImGui::PushFont(ImGui::GetIO().Fonts->Fonts[0]);
 
                 float const frame_rate = static_cast<float>(Constants::max_last_frame_time_count) / rbuf.reduce(std::plus<float> {});
                 text("FPS: %.2f", frame_rate);
@@ -114,6 +123,8 @@ void start()
 
                 slider("select", curr_id, 0, std::size(system.states) - 1);
 
+                // Environment
+                text("%s", "Environment");
                 slider("gravity",
                        buffer_env_state.gravity,
                        UI::HUD::Constants::min_gravity,
@@ -155,6 +166,8 @@ void start()
                             Pendulum::push_sprite_with_state(system.sprites, system.states.back());
                         });
                     });
+
+                ImGui::PopFont();
             });
 
         system.window.clear();

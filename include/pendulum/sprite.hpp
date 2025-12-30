@@ -6,6 +6,7 @@
 
 #include "SFML/Graphics/Vertex.hpp"
 
+#include "core/constants.hpp"
 #include "core/types.hpp"
 
 namespace Pendulum {
@@ -17,7 +18,7 @@ auto constexpr get_unit_vecs()
 {
     using std::sin, std::cos;
 
-    auto constexpr t_pi = 2 * std::numbers::pi_v<float>;
+    auto constexpr t_pi = 2 * Core::Constants::pi;
 
     std::array<sf::Vector2f, point_count> points;
     for (Core::usize i = 0; i != point_count; i++) {

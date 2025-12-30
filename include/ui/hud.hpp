@@ -1,7 +1,7 @@
 #pragma once
 #include <concepts>
-#include <numbers>
 
+#include "core/constants.hpp"
 #include "components.hpp"
 
 namespace UI {
@@ -20,7 +20,7 @@ namespace HUD {
         inline constexpr float max_length = 200.F;
 
         inline constexpr float min_angle = 0;
-        inline constexpr float max_angle = 2 * std::numbers::pi_v<float>;
+        inline constexpr float max_angle = 2 * Core::Constants::pi;
 
         inline constexpr float max_hud_width = 200.F;
     }

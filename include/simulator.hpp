@@ -14,6 +14,7 @@ namespace Constants {
     inline constexpr Core::usize window_width { 800 };
     inline constexpr Core::usize window_height { 600 };
     inline std::string const window_title { "Double Pendulum Simulation" };
+    inline constexpr float window_font_size { 13.f };
 
     // simulation constants
     inline constexpr float delta       = 0.01F;

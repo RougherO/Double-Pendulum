@@ -25,3 +25,8 @@ target_link_libraries(${PROJECT_NAME}
         SFML::Graphics
         ImGui-SFML::ImGui-SFML
 )
+
+target_compile_definitions(${PROJECT_NAME}
+    PRIVATE
+        ASSET_FOLDER="${CMAKE_SOURCE_DIR}/assets"
+)
