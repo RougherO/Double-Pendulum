@@ -92,6 +92,8 @@ void start()
 
         ImGui::SFML::Update(system.window, frame_time);
 
+        ImGui::ShowDemoWindow();
+
         UI::HUD::view(
             "HUD",
 
@@ -108,6 +110,9 @@ void start()
 
                 float const frame_rate = static_cast<float>(Constants::max_last_frame_time_count) / rbuf.reduce(std::plus<float> {});
                 text("FPS: %.2f", frame_rate);
+                text("states: %zu", std::size(system.states));
+
+                slider("select", curr_id, 0, std::size(system.states) - 1);
 
                 slider("gravity",
                        buffer_env_state.gravity,

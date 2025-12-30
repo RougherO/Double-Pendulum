@@ -2,6 +2,7 @@
 #include <concepts>
 #include <utility>
 
+#include "core/types.hpp"
 #include "imgui.h"
 
 namespace UI {
@@ -11,6 +12,13 @@ namespace Components {
         ImGui::SliderScalar(label, ImGuiDataType_Float,
                             &data, &min, &max,
                             "%.2f", ImGuiSliderFlags_ClampOnInput);
+    }
+
+    inline void slider(char const* label, Core::u64& data, Core::u64 min, Core::u64 max)
+    {
+        ImGui::SliderScalar(label, ImGuiDataType_U64,
+                            &data, &min, &max,
+                            "%lu", ImGuiSliderFlags_ClampOnInput);
     }
 
     template <typename... Args>
