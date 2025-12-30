@@ -134,6 +134,9 @@ void start()
                        buffer_env_state.damp,
                        UI::HUD::Constants::min_damp,
                        UI::HUD::Constants::max_damp);
+                button("Reset Environment", [&] {
+                    system.environ = buffer_env_state;
+                });
 
                 // Rod 1
                 text("%s", "Rod_1");
@@ -150,12 +153,9 @@ void start()
                 horizontal_layout(
                     [&] {
                         button("Reset State", [&] {
-                            auto& env    = system.environ;
                             auto& state  = system.states[curr_id];
 
-                            env   = buffer_env_state;
                             state = buffer_pend_state;
-
                             Pendulum::update_sprite_with_state(curr_id, system.sprites, state);
                         });
                     },
